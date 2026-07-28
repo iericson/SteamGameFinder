@@ -1,0 +1,166 @@
+/*
+    Genre Rows
+*/
+
+.genre-row-wrapper {
+    position: relative;
+}
+
+.genre-row {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding-bottom: 4px;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    scroll-snap-type: x mandatory;
+}
+
+.genre-row::-webkit-scrollbar {
+    display: none;
+}
+
+
+/*
+    Game Cards
+*/
+
+.game-card {
+    cursor: pointer;
+    transition: transform 0.15s ease;
+    overflow: hidden;
+    border-radius: 10px;
+    scroll-snap-align: start;
+}
+
+.game-card:hover {
+    transform: scale(1.03);
+}
+
+.game-card .thumb {
+    width: 100%;
+    aspect-ratio: 460 / 215;
+    object-fit: cover;
+    display: block;
+    border-radius: 10px;
+}
+
+
+/*
+    Horizontal Row Card Layout
+*/
+
+.genre-row .game-card {
+    flex: 0 0 calc((100% - (4 * 10px)) / 5);
+}
+
+
+/*
+    Row Navigation Arrows
+*/
+
+.row-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(20, 20, 20, 0.75);
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 1.2rem;
+    opacity: 0;
+    transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+.row-arrow:hover {
+    background: rgba(20, 20, 20, 0.95);
+}
+
+.genre-row-wrapper:hover .row-arrow {
+    opacity: 1;
+}
+
+.row-arrow.left {
+    left: -20px;
+}
+
+.row-arrow.right {
+    right: -20px;
+}
+
+
+/*
+    Game Grid Layout
+*/
+
+.game-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+}
+
+.game-grid .game-card {
+    width: 100%;
+}
+
+
+/*
+    Infinite Scroll
+*/
+
+.grid-sentinel {
+    height: 40px;
+}
+
+.grid-loading {
+    text-align: center;
+    color: #777;
+    padding: 20px 0;
+}
+
+
+/*
+    Responsive Layout
+*/
+
+@media (max-width: 992px) {
+    .genre-row .game-card {
+        flex-basis: calc((100% - (2 * 10px)) / 3);
+    }
+
+    .game-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .genre-row .game-card {
+        flex-basis: calc((100% - 10px) / 2);
+    }
+
+    .game-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+/*
+    Game Details Modal
+*/
+
+.modal-dialog {
+    max-width: 90vw;
+}
+
+.modal-content {
+    min-height: 80vh;
+}
+
+.modal-body {
+    overflow-y: auto;
+}

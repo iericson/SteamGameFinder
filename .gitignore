@@ -1,0 +1,4 @@
+target/
+nbproject/private/
+build/
+src/main/resources/games.csv
