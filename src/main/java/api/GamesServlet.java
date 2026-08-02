@@ -6,10 +6,9 @@ package api;
 
 /**
  *
- * @author namu
+ * @author Isaac Ericson
  */
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
@@ -22,6 +21,38 @@ import util.DatabaseConnection;
 @WebServlet("/api/games")
 public class GamesServlet extends HttpServlet {
 
+    // Homepage rows: only games where this tag is their primary_tag.
+    // The dedup by name has to happen globally (across ALL rows, not just
+    // this tag's matches) or the same name can independently win the
+    // "best row" for multiple different categories, since different
+    // app_id entries sharing a display name can each have a different
+    // primary_tag (soundtracks, dedicated servers, event editions, etc).
+    private static final String PRIMARY_SQL = """
+        SELECT app_id, name, header_image FROM (
+            SELECT app_id, name, header_image, primary_tag,
+                   positive, recommendations,
+                   ROW_NUMBER() OVER (
+                       PARTITION BY name
+                       ORDER BY (positive + recommendations) DESC
+                   ) AS rn
+            FROM games
+        ) ranked
+        WHERE rn = 1 AND primary_tag = ?
+        ORDER BY (positive + recommendations) DESC
+        LIMIT ? OFFSET ?
+        """;
+
+    // Category page: every game tagged with this, not just primary.
+    private static final String FULL_SQL = """
+        SELECT g.app_id, g.name, g.header_image
+        FROM games g
+        JOIN game_tags gt ON g.app_id = gt.app_id
+        JOIN tags t ON gt.tag_id = t.tag_id
+        WHERE t.name = ?
+        ORDER BY (g.positive + g.recommendations) DESC
+        LIMIT ? OFFSET ?
+        """;
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
@@ -29,7 +60,7 @@ public class GamesServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        String genre = request.getParameter("genre");
+        String category = request.getParameter("category");
 
         int limit = Integer.parseInt(
                 request.getParameter("limit") == null
@@ -43,15 +74,9 @@ public class GamesServlet extends HttpServlet {
                 : request.getParameter("offset")
         );
 
+        boolean primaryOnly = "true".equalsIgnoreCase(request.getParameter("primaryOnly"));
 
-        String sql = """
-            SELECT app_id, name, header_image
-            FROM games
-            WHERE genres LIKE ?
-            ORDER BY (positive + recommendations) DESC
-            LIMIT ? OFFSET ?
-            """;
-
+        String sql = primaryOnly ? PRIMARY_SQL : FULL_SQL;
 
         try (
             Connection conn = DatabaseConnection.getConnection();
@@ -59,7 +84,7 @@ public class GamesServlet extends HttpServlet {
             PrintWriter out = response.getWriter()
         ) {
 
-            ps.setString(1, "%" + genre + "%");
+            ps.setString(1, category);
             ps.setInt(2, limit);
             ps.setInt(3, offset);
 

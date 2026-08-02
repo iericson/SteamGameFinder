@@ -16,7 +16,7 @@ import java.sql.SQLException;
 public class DatabaseConnection {
 
     private static final String URL =
-            "jdbc:mysql://localhost:3306/gameapp";
+            "jdbc:mysql://localhost:3306/gameapp?createDatabaseIfNotExist=true&rewriteBatchedStatements=true";
 
     private static final String USER = "root";
     private static final String PASSWORD = "admin";

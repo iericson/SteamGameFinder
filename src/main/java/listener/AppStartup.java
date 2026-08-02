@@ -21,37 +21,43 @@ import util.DatabaseInitializer;
 import util.CSVImporter;
 import util.DatabaseConnection;
 
-
 @WebListener
 public class AppStartup implements ServletContextListener {
 
-
     @Override
-    public void contextInitialized(
-            ServletContextEvent sce) {
-
+    public void contextInitialized(ServletContextEvent sce) {
 
         try {
-            //DatabaseInitializer.resetDatabase(); //FOR TESTING
+//            DatabaseInitializer.resetDatabase(); // FOR TESTING
             DatabaseInitializer.initialize();
-            
-            Connection conn = DatabaseConnection.getConnection();
-            CSVImporter.importGames(conn);
-        } catch (SQLException ex) {
-            System.getLogger(AppStartup.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-        }
 
+            try (Connection conn = DatabaseConnection.getConnection()) {
+
+                if (isDatabaseEmpty(conn)) {
+                    System.out.println("Database empty. Importing games...");
+                    CSVImporter.importGames(conn);
+                    CSVImporter.importTags(conn);
+                } else {
+                    System.out.println("Games already imported. Skipping import.");
+                }
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }
-    
+
+
     private boolean isDatabaseEmpty(Connection conn) throws SQLException {
+
+        String sql = "SELECT COUNT(*) FROM games";
 
         try (
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM games")
+            ResultSet rs = stmt.executeQuery(sql)
         ) {
 
             rs.next();
-
             return rs.getInt(1) == 0;
         }
     }

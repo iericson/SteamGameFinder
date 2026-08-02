@@ -1,27 +1,27 @@
 
-const container = document.getElementById('genreContainer');
+const container = document.getElementById('categoryContainer');
 
 
-async function buildBrowseRow(genre, index) {
+async function buildCategoryRow(category, index) {
     const section = document.createElement('section');
     section.className = 'mb-4';
 
     const heading = document.createElement('a');
     heading.className = 'text-light text-decoration-none';
-    heading.href = 'genre.html?name=' + encodeURIComponent(genre);
+    heading.href = 'category.html?name=' + encodeURIComponent(category);
     const h4 = document.createElement('h4');
-    h4.textContent = genre;
+    h4.textContent = category;
     heading.appendChild(h4);
     section.appendChild(heading);
 
     const wrapper = document.createElement('div');
-    wrapper.className = 'genre-row-wrapper';
+    wrapper.className = 'category-row-wrapper';
 
     const row = document.createElement('div');
-    row.className = 'genre-row';
+    row.className = 'category-row';
     row.id = 'row-' + index;
 
-    const games = await getGamesForGenre(genre);
+    const games = await getGamesForCategory(category);
     games.forEach(game => row.appendChild(buildCard(game)));
 
     // scrolls by however many cards are currently visible
@@ -54,10 +54,10 @@ async function buildBrowseRow(genre, index) {
 
 // ---- page init ----
 async function init() {
-    const genres = await getGenres();
+    const categories = await getCategories();
 
-    for (let i = 0; i < genres.length; i++) {
-        const section = await buildBrowseRow(genres[i], i);
+    for (let i = 0; i < categories.length; i++) {
+        const section = await buildCategoryRow(categories[i], i);
         container.appendChild(section);
     }
 

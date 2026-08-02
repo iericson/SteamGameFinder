@@ -1,12 +1,11 @@
 /*
-    Genre Rows
+    Category Rows
 */
-
-.genre-row-wrapper {
+.category-row-wrapper {
     position: relative;
 }
 
-.genre-row {
+.category-row {
     display: flex;
     overflow-x: auto;
     gap: 10px;
@@ -16,15 +15,13 @@
     scroll-snap-type: x mandatory;
 }
 
-.genre-row::-webkit-scrollbar {
+.category-row::-webkit-scrollbar {
     display: none;
 }
-
 
 /*
     Game Cards
 */
-
 .game-card {
     cursor: pointer;
     transition: transform 0.15s ease;
@@ -45,20 +42,16 @@
     border-radius: 10px;
 }
 
-
 /*
     Horizontal Row Card Layout
 */
-
-.genre-row .game-card {
+.category-row .game-card {
     flex: 0 0 calc((100% - (4 * 10px)) / 5);
 }
-
 
 /*
     Row Navigation Arrows
 */
-
 .row-arrow {
     position: absolute;
     top: 50%;
@@ -81,7 +74,7 @@
     background: rgba(20, 20, 20, 0.95);
 }
 
-.genre-row-wrapper:hover .row-arrow {
+.category-row-wrapper:hover .row-arrow {
     opacity: 1;
 }
 
@@ -93,11 +86,9 @@
     right: -20px;
 }
 
-
 /*
     Game Grid Layout
 */
-
 .game-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -108,11 +99,9 @@
     width: 100%;
 }
 
-
 /*
     Infinite Scroll
 */
-
 .grid-sentinel {
     height: 40px;
 }
@@ -123,13 +112,11 @@
     padding: 20px 0;
 }
 
-
 /*
     Responsive Layout
 */
-
 @media (max-width: 992px) {
-    .genre-row .game-card {
+    .category-row .game-card {
         flex-basis: calc((100% - (2 * 10px)) / 3);
     }
 
@@ -139,7 +126,7 @@
 }
 
 @media (max-width: 576px) {
-    .genre-row .game-card {
+    .category-row .game-card {
         flex-basis: calc((100% - 10px) / 2);
     }
 
@@ -148,11 +135,9 @@
     }
 }
 
-
 /*
     Game Details Modal
 */
-
 .modal-dialog {
     max-width: 90vw;
 }
