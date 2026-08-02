@@ -40,7 +40,7 @@ A Java web application for discovering and browsing video games using data impor
 
 ## Screenshots
 
-![Homepage screenshot](./examples/homepage.png)
+![Homepage screenshot](examples/homepage.png)
 
 
 ## Author
