@@ -42,14 +42,24 @@ public class GamesServlet extends HttpServlet {
         LIMIT ? OFFSET ?
         """;
 
-    // Category page: every game tagged with this, not just primary.
+    // Category page: every game tagged with this, not just primary,
+    // deduped by name -> keeps the lowest app_id per name (the original
+    // listing rather than re-releases/bundles/editions sharing a name).
     private static final String FULL_SQL = """
-        SELECT g.app_id, g.name, g.header_image
-        FROM games g
-        JOIN game_tags gt ON g.app_id = gt.app_id
-        JOIN tags t ON gt.tag_id = t.tag_id
-        WHERE t.name = ?
-        ORDER BY (g.positive + g.recommendations) DESC
+        SELECT app_id, name, header_image FROM (
+            SELECT g.app_id, g.name, g.header_image,
+                   g.positive, g.recommendations,
+                   ROW_NUMBER() OVER (
+                       PARTITION BY g.name
+                       ORDER BY g.app_id ASC
+                   ) AS rn
+            FROM games g
+            JOIN game_tags gt ON g.app_id = gt.app_id
+            JOIN tags t ON gt.tag_id = t.tag_id
+            WHERE t.name = ?
+        ) ranked
+        WHERE rn = 1
+        ORDER BY (positive + recommendations) DESC
         LIMIT ? OFFSET ?
         """;
 

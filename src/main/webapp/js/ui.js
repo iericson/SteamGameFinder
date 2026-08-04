@@ -26,9 +26,56 @@ function openGameModal(id) {
     document.getElementById("gameModalBody").innerHTML = `
         <p><strong>Placeholder</strong></p>
         <p>/display?id=${id}</p>
+        <button class="btn btn-outline-light" id="myListToggleBtn" disabled>Loading...</button>
     `;
 
     modal.show();
+
+    wireMyListToggle(id);
+}
+
+// My List save/remove toggle
+
+async function wireMyListToggle(id) {
+    const btn = document.getElementById("myListToggleBtn");
+    if (!btn) return;
+
+    let saved = false;
+
+    try {
+        const list = await getMyList();
+        saved = list.some(game => String(game.id) === String(id));
+    } catch (error) {
+        console.error("Failed checking My List:", error);
+    }
+
+    btn.disabled = false;
+    updateMyListButton(btn, saved);
+
+    btn.addEventListener("click", async () => {
+        btn.disabled = true;
+
+        try {
+            if (saved) {
+                await removeFromMyList(id);
+                saved = false;
+            } else {
+                await addToMyList(id);
+                saved = true;
+            }
+            updateMyListButton(btn, saved);
+        } catch (error) {
+            console.error("Failed updating My List:", error);
+        } finally {
+            btn.disabled = false;
+        }
+    });
+}
+
+function updateMyListButton(btn, saved) {
+    btn.textContent = saved ? "Remove from My List" : "Add to My List";
+    btn.classList.toggle("btn-outline-light", !saved);
+    btn.classList.toggle("btn-warning", saved);
 }
 
 function attachGameCardClickListener(parent) {

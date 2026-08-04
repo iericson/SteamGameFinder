@@ -19,7 +19,7 @@ function buildNavbar() {
                         <a class="nav-link" href="index.html">Browse</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#list">My List</a>
+                        <a class="nav-link" href="mylist.html">My List</a>
                     </li>
                     <li class="nav-item d-flex align-items-center">
                         <button class="btn btn-sm btn-outline-warning" id="reimportBtn" type="button">Reimport Data</button>
