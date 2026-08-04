@@ -31,8 +31,7 @@ A Java web application for discovering and browsing video games using data impor
 ### Installation
 
 1. Clone the repository.
-2. Download games.csv.
-3. Place games.csv in \src\main\resources.
+2. Download `games.csv` from the Releases page and place it in `src/main/resources/`.
 4. Open the project in NetBeans.
 5. Create a MySQL database.
 6. Update the database connection in the configuration file.
