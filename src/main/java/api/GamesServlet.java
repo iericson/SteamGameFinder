@@ -17,6 +17,7 @@ import java.io.PrintWriter;
 import java.sql.*;
 
 import util.DatabaseConnection;
+import util.AdultContentFilter;
 
 @WebServlet("/api/games")
 public class GamesServlet extends HttpServlet {
@@ -62,6 +63,21 @@ public class GamesServlet extends HttpServlet {
         ORDER BY (positive + recommendations) DESC
         LIMIT ? OFFSET ?
         """;
+    
+    private static final String ALL_SQL = """
+    SELECT app_id, name, header_image FROM (
+        SELECT app_id, name, header_image,
+               positive, recommendations,
+               ROW_NUMBER() OVER (
+                   PARTITION BY name
+                   ORDER BY (positive + recommendations) DESC
+               ) AS rn
+        FROM games
+    ) ranked
+    WHERE rn = 1
+    ORDER BY (positive + recommendations) DESC
+    LIMIT ? OFFSET ?
+    """;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -85,8 +101,14 @@ public class GamesServlet extends HttpServlet {
         );
 
         boolean primaryOnly = "true".equalsIgnoreCase(request.getParameter("primaryOnly"));
+        boolean noCategory = category == null || category.isBlank() || "Popular".equals(category);
+        boolean showAdult = AdultContentFilter.isShowAdult(request.getParameter("adult"));
 
-        String sql = primaryOnly ? PRIMARY_SQL : FULL_SQL;
+        String template = noCategory ? ALL_SQL : (primaryOnly ? PRIMARY_SQL : FULL_SQL);
+        String sql = template.replace(
+            "%ADULT_FILTER%",
+            showAdult ? "" : AdultContentFilter.exclusionClause("ranked.app_id")
+        );
 
         try (
             Connection conn = DatabaseConnection.getConnection();
@@ -94,13 +116,14 @@ public class GamesServlet extends HttpServlet {
             PrintWriter out = response.getWriter()
         ) {
 
-            ps.setString(1, category);
-            ps.setInt(2, limit);
-            ps.setInt(3, offset);
-
+            int paramIndex = 1;
+            if (!noCategory) {
+                ps.setString(paramIndex++, category);
+            }
+            ps.setInt(paramIndex++, limit);
+            ps.setInt(paramIndex, offset);
 
             ResultSet rs = ps.executeQuery();
-
 
             StringBuilder json = new StringBuilder();
             json.append("[");
@@ -130,14 +153,11 @@ public class GamesServlet extends HttpServlet {
             }
 
             json.append("]");
-
             out.print(json.toString());
-
 
         } catch (SQLException e) {
 
             e.printStackTrace();
-
             response.setStatus(500);
             response.getWriter().print(
                 "{\"error\":\"Database error\"}"
@@ -145,13 +165,11 @@ public class GamesServlet extends HttpServlet {
         }
     }
 
-
     private String escape(String value) {
 
         if (value == null) {
             return "";
         }
-
         return value
                 .replace("\\", "\\\\")
                 .replace("\"", "\\\"");

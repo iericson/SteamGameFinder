@@ -14,12 +14,18 @@ function buildNavbar() {
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navMenu">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+                    <li class="nav-item me-3">
                         <a class="nav-link" href="index.html">Browse</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item me-3">
                         <a class="nav-link" href="mylist.html">My List</a>
+                    </li>
+                    <li class="nav-item d-flex align-items-center me-3">
+                        <div class="form-check form-switch text-light mb-0">
+                            <input class="form-check-input" type="checkbox" id="adultContentToggle">
+                            <label class="form-check-label" for="adultContentToggle">Show adult content</label>
+                        </div>
                     </li>
                     <li class="nav-item d-flex align-items-center">
                         <button class="btn btn-sm btn-outline-warning" id="reimportBtn" type="button">Reimport Data</button>
@@ -43,6 +49,23 @@ function buildNavbar() {
     });
 
     wireReimportButton();
+    wireAdultContentToggle();
+}
+
+function wireAdultContentToggle() {
+    const toggle = document.getElementById("adultContentToggle");
+    if (!toggle) return;
+
+    toggle.checked = localStorage.getItem("showAdultContent") === "true";
+
+    toggle.addEventListener("change", () => {
+        localStorage.setItem("showAdultContent", toggle.checked);
+        location.reload();
+    });
+}
+
+function isShowingAdultContent() {
+    return localStorage.getItem("showAdultContent") === "true";
 }
 
 function wireReimportButton() {

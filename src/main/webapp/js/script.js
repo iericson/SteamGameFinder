@@ -6,6 +6,17 @@ let categoryOffset = 0;
 let loadingCategories = false;
 let categoriesDone = false;
 
+const TAGS_TO_EXCLUDE_FROM_LIST = ["Free to Play"];
+
+async function buildPinnedRows() {
+    const popularGames = await getPopularGames();
+    const popularSection = buildGameRow('Popular', 'category.html?name=Popular', popularGames, 'popular');
+
+    const ftpGames = await getGamesForCategory('Free to Play');
+    const ftpSection = buildGameRow('Free to Play', 'category.html?name=' + encodeURIComponent('Free to Play'), ftpGames, 'freetoplay');
+
+    return [popularSection, ftpSection];
+}
 
 function buildGameRow(title, href, games, rowId, emptyMessage) {
     const section = document.createElement('section');
@@ -103,6 +114,7 @@ async function loadNextCategoryBatch() {
     }
 
     for (let i = 0; i < categories.length; i++) {
+        if (TAGS_TO_EXCLUDE_FROM_LIST.includes(categories[i])) continue;
         const section = await buildCategoryRow(categories[i], categoryOffset + i);
         container.appendChild(section);
     }
@@ -134,6 +146,9 @@ async function refreshMyListRow() {
 async function init() {
     const myListSection = await buildMyListRow();
     container.appendChild(myListSection);
+
+    const pinnedSections = await buildPinnedRows();
+    pinnedSections.forEach(section => container.appendChild(section));
 
     await loadNextCategoryBatch();
     attachGameCardClickListener(container);

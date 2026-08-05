@@ -17,6 +17,7 @@ import java.io.PrintWriter;
 import java.sql.*;
 
 import util.DatabaseConnection;
+import util.AdultContentFilter;
 
 @WebServlet("/api/categories")
 public class CategoriesServlet extends HttpServlet {
@@ -45,16 +46,17 @@ public class CategoriesServlet extends HttpServlet {
                 : request.getParameter("offset")
         );
 
+        boolean showAdult = AdultContentFilter.isShowAdult(request.getParameter("adult"));
+        
         String sql = """
-            SELECT t.name AS category,
-                   COUNT(gt.app_id) AS game_count
-            FROM tags t
-            JOIN game_tags gt
-                ON t.tag_id = gt.tag_id
-            GROUP BY t.tag_id, t.name
+            SELECT primary_tag AS category, COUNT(*) AS game_count
+            FROM games g
+            WHERE primary_tag IS NOT NULL
+            %ADULT_FILTER%
+            GROUP BY primary_tag
             ORDER BY game_count DESC
             LIMIT ? OFFSET ?
-            """;
+            """.replace("%ADULT_FILTER%", showAdult ? "" : AdultContentFilter.exclusionClause("g.app_id"));
 
         try (
             Connection conn = DatabaseConnection.getConnection();

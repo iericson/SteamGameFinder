@@ -1,5 +1,7 @@
 const CARDS_PER_ROW = 40;
-const CATEGORY_POOL_SIZE = 100;
+const KNOWN_POOL_SIZE = 60;
+const DISCOVERY_POOL_SIZE = 20;
+const DISCOVERY_OFFSET = 100;
 
 // Shuffle arrays to randomize games in category lists
 function shuffle(array) {
@@ -20,16 +22,24 @@ async function getCategories(limit, offset) {
 }
 
 
-// Get games for homepage row
+// Get games for homepage row. Sorted by popularity and randomized "Discovery Pool"
 async function getGamesForCategory(category) {
-    const response = await fetch(
-        `api/games?category=${encodeURIComponent(category)}&limit=${CATEGORY_POOL_SIZE}&offset=0&primaryOnly=true`
-    );
+    const [popularResponse, discoveryResponse] = await Promise.all([
+        fetch(`api/games?category=${encodeURIComponent(category)}&limit=${KNOWN_POOL_SIZE}&offset=0`),
+        fetch(`api/games?category=${encodeURIComponent(category)}&limit=${DISCOVERY_POOL_SIZE}&offset=${DISCOVERY_OFFSET}`)
+    ]);
 
-    const games = await response.json();
-    return shuffle(games).slice(0, CARDS_PER_ROW);
+    const popular = await popularResponse.json();
+    const discovery = await discoveryResponse.json();
+
+    return shuffle([...popular, ...discovery]).slice(0, CARDS_PER_ROW);
 }
 
+// Get top games overall for the Popular row (not shuffled, true ranking)
+async function getPopularGames() {
+    const response = await fetch(`api/games?category=Popular&limit=${CARDS_PER_ROW}&offset=0`);
+    return await response.json();
+}
 
 // Get games for category page
 async function getGamesPage(category, limit, offset) {
