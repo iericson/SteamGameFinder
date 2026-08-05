@@ -66,7 +66,9 @@
                     <c:if test="${not empty game.tags}">
                         <div class="mb-3">
                             <c:forEach var="tag" items="${game.tags}">
-                                <span class="badge bg-secondary me-1">${tag}</span>
+                                <a href="<c:url value='/category.html'><c:param name='name' value='${tag}'/></c:url>" class="text-decoration-none">
+                                    <span class="badge bg-secondary me-1">${tag}</span>
+                                </a>
                             </c:forEach>
                         </div>
                     </c:if>
