@@ -52,6 +52,7 @@ function buildNavbar() {
 
     wireReimportButton();
     wireAdultContentToggle();
+    wireSearchForm();
 }
 
 function wireAdultContentToggle() {
@@ -102,6 +103,18 @@ function wireReimportButton() {
             reimportBtn.disabled = false;
             reimportBtn.textContent = "Reimport Data";
         }
+    });
+}
+
+function wireSearchForm() {
+    const form = document.querySelector('form[role="search"]');
+    if (!form) return;
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const query = form.querySelector('input[type="search"]').value.trim();
+        if (!query) return;
+        window.location.href = 'category.html?q=' + encodeURIComponent(query);
     });
 }
 

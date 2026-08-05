@@ -6,9 +6,10 @@
 const BATCH_SIZE = 40;
 
 const params = new URLSearchParams(window.location.search);
+const searchQuery = params.get("q");
 const categoryName = params.get("name") || "Unknown";
 
-document.getElementById("gridTitle").textContent = categoryName;
+document.getElementById("gridTitle").textContent = searchQuery ? `Search: "${searchQuery}"` : categoryName;
 
 const grid = document.getElementById("gameGrid");
 const sentinel = document.getElementById("gridSentinel");
@@ -25,7 +26,9 @@ async function loadNextBatch() {
     let games;
 
     try {
-        games = await getGamesPage(categoryName, BATCH_SIZE, offset);
+        games = searchQuery
+            ? await getSearchResults(searchQuery, BATCH_SIZE, offset)
+            : await getGamesPage(categoryName, BATCH_SIZE, offset);
     } catch (error) {
         console.error("Failed loading games:", error);
         loading = false;

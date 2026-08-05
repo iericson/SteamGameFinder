@@ -63,6 +63,15 @@ async function getMyList() {
     return await response.json();
 }
 
+// Get results for a free-text search
+async function getSearchResults(query, limit, offset) {
+    const response = await fetch(
+        `api/search?q=${encodeURIComponent(query)}&limit=${limit}&offset=${offset}&${adultParam()}`
+    );
+
+    return await response.json();
+}
+
 // Save a game to this browser session's My List
 async function addToMyList(id) {
     const response = await fetch(`api/mylist?id=${encodeURIComponent(id)}`, {
