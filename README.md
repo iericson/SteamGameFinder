@@ -1,13 +1,12 @@
-# Game Discovery App
+# Steam Game Finder
 
 A Java web application for discovering and browsing video games using data imported from Steam.
 
 ## Features
 
-- Browse a large game library
-- Search for games
-- View game details
-- Store user-specific lists (favorites, etc.)
+- Browse a large game library (125,000+ games)
+- View detailed game info
+- Save games to a session-based "My List"
 
 ## Built With
 
@@ -32,10 +31,13 @@ A Java web application for discovering and browsing video games using data impor
 
 1. Clone the repository.
 2. Download `games.csv` from the Releases page and place it in `src/main/resources/`.
-4. Open the project in NetBeans.
-5. Create a MySQL database.
-6. Update the database connection in the configuration file.
-7. Run the project on Tomcat.
+3. Open the project in NetBeans.
+4. Make sure MySQL is running locally. Defaults to user `root`, password `admin` on `localhost:3306`. If yours is different, override with VM options on your Tomcat server instead of editing source:
+   - In NetBeans: Services → Servers → your Tomcat instance → right-click → Properties → Platform → VM Options
+   - Add: `-Ddb.user=[USERNAME] -Ddb.password=[PASSWORD]`
+   - (or `-Ddb.url=...` to change host/port/database name entirely)
+5. Run the project on Tomcat. The database, tables, and game data are created automatically on first startup.
+
 
 ## Screenshots
 

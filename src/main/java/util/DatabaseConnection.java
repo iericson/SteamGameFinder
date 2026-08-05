@@ -15,11 +15,13 @@ import java.sql.SQLException;
 
 public class DatabaseConnection {
 
-    private static final String URL =
-            "jdbc:mysql://localhost:3306/gameapp?createDatabaseIfNotExist=true&rewriteBatchedStatements=true";
+    private static final String URL = System.getProperty(
+        "db.url",
+        "jdbc:mysql://localhost:3306/gameapp?createDatabaseIfNotExist=true&rewriteBatchedStatements=true"
+);
 
-    private static final String USER = "root";
-    private static final String PASSWORD = "admin";
+    private static final String USER = System.getProperty("db.user", "root");
+    private static final String PASSWORD = System.getProperty("db.password", "admin");
 
 
     public static Connection getConnection() throws SQLException {

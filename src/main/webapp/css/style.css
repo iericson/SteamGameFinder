@@ -149,3 +149,45 @@
 .modal-body {
     overflow-y: auto;
 }
+
+/*
+    Game Details Image Carousel
+*/
+
+.carousel-wrapper {
+    position: relative;
+}
+
+.carousel-nav {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 50%;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 2rem;
+    opacity: 0;
+    transition: opacity 0.15s ease, background 0.15s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.carousel-nav:hover {
+    opacity: 1;
+}
+
+.carousel-nav.prev {
+    left: 0;
+    justify-content: flex-start;
+    padding-left: 10px;
+    background: linear-gradient(to right, rgba(0,0,0,0.4), transparent);
+}
+
+.carousel-nav.next {
+    right: 0;
+    justify-content: flex-end;
+    padding-right: 10px;
+    background: linear-gradient(to left, rgba(0,0,0,0.4), transparent);
+}

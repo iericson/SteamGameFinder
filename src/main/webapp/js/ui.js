@@ -18,18 +18,28 @@ function buildCard(game) {
 
 // modal
 
-function openGameModal(id) {
+async function openGameModal(id) {
     const modal = new bootstrap.Modal(
         document.getElementById("gameModal")
     );
 
-    document.getElementById("gameModalBody").innerHTML = `
-        <p><strong>Placeholder</strong></p>
-        <p>/display?id=${id}</p>
-        <button class="btn btn-outline-light" id="myListToggleBtn" disabled>Loading...</button>
-    `;
-
+    const modalBody = document.getElementById("gameModalBody");
+    modalBody.innerHTML = "<p>Loading...</p>";
     modal.show();
+
+    try {
+        const response = await fetch(`display?id=${encodeURIComponent(id)}`);
+        const html = await response.text();
+
+        const doc = new DOMParser().parseFromString(html, "text/html");
+        const content = doc.getElementById("gameDetailsContent");
+
+        modalBody.innerHTML = content ? content.innerHTML : "<p>Failed to load game details.</p>";
+    } catch (error) {
+        console.error("Failed loading game details:", error);
+        modalBody.innerHTML = "<p>Failed to load game details.</p>";
+        return;
+    }
 
     wireMyListToggle(id);
 }
