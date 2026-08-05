@@ -28,7 +28,7 @@ function buildGameRow(title, href, games, rowId, emptyMessage) {
 
     if (games.length === 0 && emptyMessage) {
         const placeholder = document.createElement('div');
-        placeholder.className = 'mylist-placeholder';
+        placeholder.className = 'mylist-placeholder text-secondary';
         placeholder.textContent = emptyMessage;
         row.appendChild(placeholder);
     } else {

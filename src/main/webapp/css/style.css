@@ -191,3 +191,26 @@
     padding-right: 10px;
     background: linear-gradient(to left, rgba(0,0,0,0.4), transparent);
 }
+
+#mainScreenshot {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.details-about {
+    display: -webkit-box;
+    -webkit-line-clamp: 6;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.details-about.expanded {
+    -webkit-line-clamp: unset;
+    display: block;
+}
+
+#gameModalBody .back-to-browse-btn {
+    display: none;
+}

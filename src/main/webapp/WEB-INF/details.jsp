@@ -35,14 +35,13 @@
                     <c:choose>
                         <c:when test="${not empty game.screenshots}">
                             <div class="carousel-wrapper mb-2">
-                                <img id="mainScreenshot" src="${game.screenshots[0]}" class="img-fluid rounded" alt="${game.name}">
+                                <img id="mainScreenshot" src="${game.screenshots[0]}" class="rounded" alt="${game.name}">
                                 <button type="button" class="carousel-nav prev" id="prevShot" aria-label="Previous screenshot">&#10094;</button>
                                 <button type="button" class="carousel-nav next" id="nextShot" aria-label="Next screenshot">&#10095;</button>
                             </div>
                             <div class="d-flex gap-2 overflow-auto">
-                                <c:forEach var="shot" items="${game.screenshots}" varStatus="loop">
-                                    <img src="${shot}" class="rounded" style="width:120px; height:68px; object-fit:cover; cursor:pointer;"
-                                         onclick="showScreenshot(${loop.index})">
+                                <c:forEach var="shot" items="${game.screenshots}">
+                                    <img src="${shot}" class="detail-thumb rounded" style="width:120px; height:68px; object-fit:cover; cursor:pointer;">
                                 </c:forEach>
                             </div>
                         </c:when>
@@ -55,13 +54,14 @@
                 <div class="col-lg-4">
                     <img src="${game.headerImage}" class="img-fluid rounded mb-3" alt="${game.name}">
 
-                    <p>${game.aboutTheGame}</p>
-
                     <p class="text-secondary mb-3">
                         Release Date: ${game.releaseDate}<br>
                         Developer: ${game.developers}<br>
                         Publisher: ${game.publishers}
                     </p>
+
+                    <p class="details-about">${game.aboutTheGame}</p>
+                    <button type="button" class="btn btn-sm btn-link text-light px-0 mb-3" id="aboutToggle">Show more</button>
 
                     <c:if test="${not empty game.tags}">
                         <div class="mb-3">
@@ -78,31 +78,22 @@
                 </div>
             </div>
 
-            <a href="${pageContext.request.contextPath}/index.html" class="btn btn-outline-light mt-4">Back to Browse</a>
+            <a href="${pageContext.request.contextPath}/index.html" class="btn btn-outline-light mt-4 back-to-browse-btn">Back to Browse</a>
 
         </div>
     </c:if>
-
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="${pageContext.request.contextPath}/js/navbar.js"></script>
     <script src="${pageContext.request.contextPath}/js/api.js"></script>
     <script src="${pageContext.request.contextPath}/js/ui.js"></script>
     <c:if test="${not empty game}">
     <script>
-        document.addEventListener("DOMContentLoaded", () => wireMyListToggle(${game.id}));
-
-        const screenshots = [<c:forEach var="shot" items="${game.screenshots}" varStatus="loop">"${shot}"<c:if test="${!loop.last}">,</c:if></c:forEach>];
-        let currentShot = 0;
-
-        function showScreenshot(index) {
-            if (screenshots.length === 0) return;
-            currentShot = (index + screenshots.length) % screenshots.length;
-            const img = document.getElementById("mainScreenshot");
-            if (img) img.src = screenshots[currentShot];
-        }
-
-        document.getElementById("prevShot")?.addEventListener("click", () => showScreenshot(currentShot - 1));
-        document.getElementById("nextShot")?.addEventListener("click", () => showScreenshot(currentShot + 1));
+        document.addEventListener("DOMContentLoaded", () => {
+            wireMyListToggle(${game.id});
+            wireCarousel(document.getElementById("gameDetailsContent"));
+            wireReadMore(document.getElementById("gameDetailsContent"));
+        });
     </script>
     </c:if>
 </body>

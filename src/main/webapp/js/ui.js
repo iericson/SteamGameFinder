@@ -42,6 +42,8 @@ async function openGameModal(id) {
     }
 
     wireMyListToggle(id);
+    wireCarousel(modalBody);
+    wireReadMore(modalBody);
 }
 
 // My List save/remove toggle
@@ -86,6 +88,37 @@ function updateMyListButton(btn, saved) {
     btn.textContent = saved ? "Remove from My List" : "Add to My List";
     btn.classList.toggle("btn-outline-light", !saved);
     btn.classList.toggle("btn-warning", saved);
+}
+
+function wireCarousel(container) {
+    const mainImg = container.querySelector("#mainScreenshot");
+    const thumbs = Array.from(container.querySelectorAll(".detail-thumb"));
+    if (!mainImg || thumbs.length === 0) return;
+
+    let current = 0;
+
+    function show(index) {
+        current = (index + thumbs.length) % thumbs.length;
+        mainImg.src = thumbs[current].src;
+    }
+
+    thumbs.forEach((thumb, index) => {
+        thumb.addEventListener("click", () => show(index));
+    });
+
+    container.querySelector("#prevShot")?.addEventListener("click", () => show(current - 1));
+    container.querySelector("#nextShot")?.addEventListener("click", () => show(current + 1));
+}
+
+function wireReadMore(container) {
+    const about = container.querySelector(".details-about");
+    const toggle = container.querySelector("#aboutToggle");
+    if (!about || !toggle) return;
+
+    toggle.addEventListener("click", () => {
+        const expanded = about.classList.toggle("expanded");
+        toggle.textContent = expanded ? "Show less" : "Show more";
+    });
 }
 
 function attachGameCardClickListener(parent) {
