@@ -1,4 +1,15 @@
 const CARDS_PER_ROW = 40;
+const CATEGORY_POOL_SIZE = 100;
+
+// Shuffle arrays to randomize games in category lists
+function shuffle(array) {
+    const result = array.slice();
+    for (let i = result.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
+    }
+    return result;
+}
 
 
 // Get a page of categories
@@ -12,10 +23,11 @@ async function getCategories(limit, offset) {
 // Get games for homepage row
 async function getGamesForCategory(category) {
     const response = await fetch(
-        `api/games?category=${encodeURIComponent(category)}&limit=${CARDS_PER_ROW}&primaryOnly=true`
+        `api/games?category=${encodeURIComponent(category)}&limit=${CATEGORY_POOL_SIZE}&offset=0&primaryOnly=true`
     );
 
-    return await response.json();
+    const games = await response.json();
+    return shuffle(games).slice(0, CARDS_PER_ROW);
 }
 
 

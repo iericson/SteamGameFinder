@@ -117,7 +117,7 @@ function handleCategoryIntersection(entries) {
     }
 }
 
-const categoryObserver = new IntersectionObserver(handleCategoryIntersection);
+const categoryObserver = new IntersectionObserver(handleCategoryIntersection, { rootMargin: "800px" });
 categoryObserver.observe(sentinel);
 
 async function refreshMyListRow() {

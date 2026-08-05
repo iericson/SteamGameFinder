@@ -31,6 +31,12 @@ async function loadNextBatch() {
         loading = false;
         return;
     }
+    
+    if (!Array.isArray(games)) {
+        console.error("Unexpected response loading games:", games);
+        loading = false;
+        return;
+    }
 
     if (games.length === 0) {
         done = true;
@@ -50,7 +56,7 @@ function handleIntersection(entries) {
     }
 }
 
-const observer = new IntersectionObserver(handleIntersection);
+const observer = new IntersectionObserver(handleIntersection, { rootMargin: "800px" });
 observer.observe(sentinel);
 
 loadNextBatch();
