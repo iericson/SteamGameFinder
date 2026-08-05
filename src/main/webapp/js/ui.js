@@ -35,6 +35,12 @@ async function openGameModal(id) {
         const content = doc.getElementById("gameDetailsContent");
 
         modalBody.innerHTML = content ? content.innerHTML : "<p>Failed to load game details.</p>";
+
+        const glow = document.getElementById("modalBackdropGlow");
+        const heroImg = modalBody.querySelector("#detailsHeaderImage");
+        if (glow) {
+            glow.style.backgroundImage = heroImg ? `url(${heroImg.src})` : "none";
+        }
     } catch (error) {
         console.error("Failed loading game details:", error);
         modalBody.innerHTML = "<p>Failed to load game details.</p>";

@@ -1,3 +1,7 @@
+.bg-dark {
+    background-color: #0d0d0f !important;
+}
+
 /*
     Category Rows
 */
@@ -144,10 +148,29 @@
 
 .modal-content {
     min-height: 80vh;
+    position: relative;
+    overflow: hidden;
+    background-color: #0d0d0f;
 }
 
 .modal-body {
     overflow-y: auto;
+}
+
+.modal-backdrop-glow {
+    position: absolute;
+    inset: -20px;
+    background-size: cover;
+    background-position: center;
+    filter: blur(60px) brightness(0.4);
+    opacity: 0.6;
+    z-index: 0;
+}
+
+.modal-header,
+.modal-body {
+    position: relative;
+    z-index: 1;
 }
 
 /*

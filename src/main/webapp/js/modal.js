@@ -11,6 +11,7 @@ function buildGameModal() {
     modal.innerHTML = `
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content bg-dark text-light">
+                <div class="modal-backdrop-glow" id="modalBackdropGlow"></div>
                 <div class="modal-header border-0 justify-content-end">
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>

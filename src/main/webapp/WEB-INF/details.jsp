@@ -52,7 +52,7 @@
                 </div>
 
                 <div class="col-lg-4">
-                    <img src="${game.headerImage}" class="img-fluid rounded mb-3" alt="${game.name}">
+                    <img src="${game.headerImage}" class="img-fluid rounded mb-3" alt="${game.name}" id="detailsHeaderImage">
 
                     <p class="text-secondary mb-3">
                         Release Date: ${game.releaseDate}<br>

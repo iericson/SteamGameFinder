@@ -22,10 +22,12 @@ function buildNavbar() {
                         <a class="nav-link" href="mylist.html">My List</a>
                     </li>
                     <li class="nav-item d-flex align-items-center me-3">
-                        <div class="form-check form-switch text-light mb-0">
-                            <input class="form-check-input" type="checkbox" id="adultContentToggle">
-                            <label class="form-check-label" for="adultContentToggle">Show adult content</label>
-                        </div>
+                        <button
+                            class="btn btn-sm btn-outline-secondary"
+                            id="adultContentToggle"
+                            type="button">
+                            Adult Content: Hidden
+                        </button>
                     </li>
                     <li class="nav-item d-flex align-items-center">
                         <button class="btn btn-sm btn-outline-warning" id="reimportBtn" type="button">Reimport Data</button>
@@ -56,10 +58,17 @@ function wireAdultContentToggle() {
     const toggle = document.getElementById("adultContentToggle");
     if (!toggle) return;
 
-    toggle.checked = localStorage.getItem("showAdultContent") === "true";
+    function updateButton() {
+        const showing = isShowingAdultContent();
+        toggle.textContent = showing ? "Adult Content: Shown" : "Adult Content: Hidden";
+        toggle.classList.toggle("btn-outline-secondary", !showing);
+        toggle.classList.toggle("btn-warning", showing);
+    }
 
-    toggle.addEventListener("change", () => {
-        localStorage.setItem("showAdultContent", toggle.checked);
+    updateButton();
+
+    toggle.addEventListener("click", () => {
+        localStorage.setItem("showAdultContent", localStorage.getItem("showAdultContent") !== "true");
         location.reload();
     });
 }

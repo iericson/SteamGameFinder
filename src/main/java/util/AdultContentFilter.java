@@ -38,7 +38,7 @@ public class AdultContentFilter {
                 sql.append("OR ");
             }
             sql.append("FIND_IN_SET('").append(BLOCKED_TAGS[i])
-               .append("', gd.tags) BETWEEN 1 AND ").append(RANK_LIMIT).append("\n");
+               .append("', REPLACE(gd.tags, ', ', ',')) BETWEEN 1 AND ").append(RANK_LIMIT).append("\n");
         }
 
         sql.append("    )\n");
