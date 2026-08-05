@@ -142,9 +142,6 @@
 /*
     Game Details Modal
 */
-.modal-dialog {
-    max-width: 90vw;
-}
 
 .modal-content {
     min-height: 80vh;
@@ -236,4 +233,23 @@
 
 #gameModalBody .back-to-browse-btn {
     display: none;
+}
+
+.modal-dialog {
+    max-width: 1600px;
+}
+
+#gameDetailsContent .row {
+    flex-wrap: nowrap;
+}
+
+#gameDetailsContent .col-lg-8 {
+    flex: 1 1 0%;
+    max-width: none;
+    min-width: 0;
+}
+
+#gameDetailsContent .col-lg-4 {
+    flex: 0 0 460px;
+    max-width: 460px;
 }
