@@ -32,10 +32,7 @@ A Java web application for discovering and browsing video games using data impor
 1. Clone the repository.
 2. Download `games.csv` from the Releases page and place it in `src/main/resources/`.
 3. Open the project in NetBeans.
-4. Make sure MySQL is running locally. Defaults to user `root`, password `admin` on `localhost:3306`. If yours is different, override with VM options on your Tomcat server instead of editing source:
-   - In NetBeans: Services → Servers → your Tomcat instance → right-click → Properties → Platform → VM Options
-   - Add: `-Ddb.user=[USERNAME] -Ddb.password=[PASSWORD]`
-   - (or `-Ddb.url=...` to change host/port/database name entirely)
+4. Make sure MySQL is running locally. Defaults to user `root`, password `admin` on `localhost:3306`. If your MySQL configuration is different, either edit the default values in 'DatabaseConnection.java' or provide 'db.url', 'db.user', and 'db.password' as Tomcat VM options.
 5. Run the project on Tomcat. The database, tables, and game data are created automatically on first startup.
 
 
