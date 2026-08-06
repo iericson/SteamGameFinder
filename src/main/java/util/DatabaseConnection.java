@@ -17,7 +17,8 @@ public class DatabaseConnection {
 
     private static final String URL = System.getProperty(
         "db.url",
-        "jdbc:mysql://localhost:3306/gameapp?createDatabaseIfNotExist=true&rewriteBatchedStatements=true"
+        "jdbc:mysql://localhost:3306/gameapp?createDatabaseIfNotExist=true"
+        + "&rewriteBatchedStatements=true&useServerPrepStmts=false&cachePrepStmts=true"
 );
 
     private static final String USER = System.getProperty("db.user", "root");

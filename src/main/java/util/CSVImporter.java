@@ -118,7 +118,8 @@ public class CSVImporter {
             if (input == null) {
                 throw new FileNotFoundException("games.csv not found");
             }
-
+            
+            long start = System.currentTimeMillis();
             try (
                 Reader reader = new InputStreamReader(input);
                 CSVParser csv = CSVFormat.DEFAULT.builder()
@@ -180,6 +181,7 @@ public class CSVImporter {
                     + "Skipped " + skippedMalformed + " malformed rows, "
                     + skippedBadData + " rows with bad data."
                 );
+                System.out.println("Games import took " + (System.currentTimeMillis() - start) + "ms");
             } finally {
                 conn.setAutoCommit(oldAutoCommit);
             }
@@ -197,16 +199,12 @@ public class CSVImporter {
 
         String insertGameTagSQL = """
             INSERT IGNORE INTO game_tags(app_id, tag_id)
-            SELECT ?, tag_id
-            FROM tags
-            WHERE name = ?
+            VALUES(?, ?)
             """;
-
 
         try (
             InputStream input = CSVImporter.class.getResourceAsStream("/games.csv");
             Reader reader = new InputStreamReader(input);
-
             CSVParser csv = CSVFormat.DEFAULT.builder()
                 .setHeader()
                 .setSkipHeaderRecord(true)
@@ -214,66 +212,86 @@ public class CSVImporter {
                 .setIgnoreEmptyLines(true)
                 .build()
                 .parse(reader);
-
-            PreparedStatement tagPS = conn.prepareStatement(insertTagSQL);
-            PreparedStatement gameTagPS = conn.prepareStatement(insertGameTagSQL);
-
+            PreparedStatement tagPS = conn.prepareStatement(insertTagSQL)
         ) {
-
             conn.setAutoCommit(false);
 
-            int processed = 0;
+            // Pass 1: insert every distinct tag name. Plain VALUES insert,
+            // so rewriteBatchedStatements actually collapses this into one
+            // multi-row insert per batch instead of one round trip per tag.
+            java.util.Set<String> seen = new java.util.HashSet<>();
             int batched = 0;
-
-
             for (CSVRecord row : csv) {
-
-                int appId = getInt(row.get("AppID"));
                 String tags = row.get("Tags");
-
-                if (tags == null || tags.isBlank()) {
-                    continue;
-                }
-                String[] tagList = tags.split(",");
-
-                for (String tag : tagList) {
+                if (tags == null || tags.isBlank()) continue;
+                for (String tag : tags.split(",")) {
                     tag = tag.trim();
-                    if (tag.isEmpty()) {
-                        continue;
-                    }
-                    // Add tag
+                    if (tag.isEmpty() || !seen.add(tag)) continue;
                     tagPS.setString(1, tag);
                     tagPS.addBatch();
+                    if (++batched % BATCH_SIZE == 0) tagPS.executeBatch();
+                }
+            }
+            tagPS.executeBatch();
+            conn.commit();
 
-                    // Link game -> tag
-                    gameTagPS.setInt(1, appId);
-                    gameTagPS.setString(2, tag);
-                    gameTagPS.addBatch();
-                    batched++;
+            // Build name -> id map in memory so we never need a per-row
+            // SELECT to link a game to its tags.
+            java.util.Map<String, Integer> tagIds = new java.util.HashMap<>();
+            try (
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT tag_id, name FROM tags")
+            ) {
+                while (rs.next()) {
+                    tagIds.put(rs.getString("name"), rs.getInt("tag_id"));
+                }
+            }
 
-                    if (batched >= BATCH_SIZE) {
-                        tagPS.executeBatch();
-                        gameTagPS.executeBatch();
-                        conn.commit();
-                        tagPS.clearBatch();
-                        gameTagPS.clearBatch();
-                        batched = 0;
+            // Pass 2: link games to tags, resolved entirely in Java, so this
+            // is also a plain VALUES insert that batches properly.
+            try (
+                InputStream input2 = CSVImporter.class.getResourceAsStream("/games.csv");
+                Reader reader2 = new InputStreamReader(input2);
+                CSVParser csv2 = CSVFormat.DEFAULT.builder()
+                    .setHeader()
+                    .setSkipHeaderRecord(true)
+                    .setQuote('"')
+                    .setIgnoreEmptyLines(true)
+                    .build()
+                    .parse(reader2);
+                PreparedStatement gameTagPS = conn.prepareStatement(insertGameTagSQL)
+            ) {
+                int processed = 0;
+                batched = 0;
+                for (CSVRecord row : csv2) {
+                    int appId = getInt(row.get("AppID"));
+                    String tags = row.get("Tags");
+                    if (tags != null && !tags.isBlank()) {
+                        for (String tag : tags.split(",")) {
+                            tag = tag.trim();
+                            Integer tagId = tagIds.get(tag);
+                            if (tagId == null) continue;
+                            gameTagPS.setInt(1, appId);
+                            gameTagPS.setInt(2, tagId);
+                            gameTagPS.addBatch();
+                            if (++batched % BATCH_SIZE == 0) {
+                                gameTagPS.executeBatch();
+                                conn.commit();
+                                batched = 0;
+                            }
+                        }
+                    }
+                    processed++;
+                    if (processed % 10000 == 0) {
+                        System.out.println("Processed tags for " + processed + " games");
                     }
                 }
-                processed++;
-
-                if (processed % 1000 == 0) {
-                    System.out.println(
-                        "Processed tags for " + processed + " games"
-                    );
+                if (batched > 0) {
+                    gameTagPS.executeBatch();
+                    conn.commit();
                 }
             }
 
-            if (batched > 0) {
-                tagPS.executeBatch();
-                gameTagPS.executeBatch();
-                conn.commit();
-            }
             System.out.println("Finished importing tags.");
         } catch (Exception e) {
             e.printStackTrace();
@@ -282,7 +300,7 @@ public class CSVImporter {
             } catch (SQLException ignored) {}
         }
     }
-
+    
     private static void setGamesValues(PreparedStatement ps, CSVRecord row) throws SQLException {
         ps.setInt(1, getInt(row.get(APP_ID)));
         ps.setString(2, row.get(NAME));
