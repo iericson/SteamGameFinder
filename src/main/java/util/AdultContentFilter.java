@@ -15,7 +15,7 @@ public class AdultContentFilter {
         "Hentai", "NSFW", "Mature", "Nudity", "Sexual Content"
     };
 
-    private static final int RANK_LIMIT = 5;
+    private static final int RANK_LIMIT = 10;
 
     public static boolean isShowAdult(String adultParam) {
         return "true".equalsIgnoreCase(adultParam);
