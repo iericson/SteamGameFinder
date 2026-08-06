@@ -51,6 +51,11 @@ async function loadNextBatch() {
 
     offset += games.length;
     loading = false;
+
+    const rect = sentinel.getBoundingClientRect();
+    if (rect.top < window.innerHeight + 800) {
+        loadNextBatch();
+    }
 }
 
 function handleIntersection(entries) {
