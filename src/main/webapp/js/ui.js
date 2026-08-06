@@ -50,6 +50,7 @@ async function openGameModal(id) {
     wireMyListToggle(id);
     wireCarousel(modalBody);
     wireReadMore(modalBody);
+    wireThumbnailScroll(modalBody);
 }
 
 // My List save/remove toggle
@@ -125,6 +126,19 @@ function wireReadMore(container) {
         const expanded = about.classList.toggle("expanded");
         toggle.textContent = expanded ? "Show less" : "Show more";
     });
+}
+
+function wireThumbnailScroll(container) {
+    const strip = container.querySelector(".detail-thumbs");
+
+    if (!strip) return;
+
+    strip.addEventListener("wheel", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        strip.scrollLeft += e.deltaY;
+    }, { passive: false, capture: true });
 }
 
 function attachGameCardClickListener(parent) {

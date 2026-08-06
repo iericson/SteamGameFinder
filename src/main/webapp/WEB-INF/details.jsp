@@ -39,7 +39,7 @@
                                 <button type="button" class="carousel-nav prev" id="prevShot" aria-label="Previous screenshot">&#10094;</button>
                                 <button type="button" class="carousel-nav next" id="nextShot" aria-label="Next screenshot">&#10095;</button>
                             </div>
-                            <div class="d-flex gap-2 overflow-auto">
+                            <div class="detail-thumbs d-flex gap-2 overflow-x-auto">
                                 <c:forEach var="shot" items="${game.screenshots}">
                                     <img src="${shot}" class="detail-thumb rounded" style="width:120px; height:68px; object-fit:cover; cursor:pointer;">
                                 </c:forEach>
@@ -132,6 +132,7 @@
             wireMyListToggle(${game.id});
             wireCarousel(document.getElementById("gameDetailsContent"));
             wireReadMore(document.getElementById("gameDetailsContent"));
+            wireThumbnailScroll(document.getElementById("gameDetailsContent"));
         });
     </script>
     </c:if>
