@@ -38,9 +38,16 @@ Isaac Ericson
 5. Run the project on Tomcat. The database, tables, and game data are created automatically on first startup.
 
 ## Screenshots
+**Homepage**, with an empty and a populated My List:
 ![Homepage with empty My List screenshot](examples/homepage_nolist.png)
 ![Homepage with My List screenshot](examples/homepage_mylist.png)
+
+**Category page**, browsing the `Indie` tag:
 ![`Indie` category page screenshot](examples/categorypage.png)
+
+**Game details**, for `Terraria`:
 ![Game Details for `Terraria` screenshot](examples/details.png)
+
+**Search**, by game name and by tags:
 ![Search results for `Hitman` screenshot](examples/search_game.png)
 ![Search results for `Action RPG FPS` screenshot](examples/search_tags.png)
