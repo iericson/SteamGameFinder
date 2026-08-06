@@ -43,7 +43,10 @@ public class DisplayServlet extends HttpServlet {
         String sql = """
             SELECT g.app_id, g.name, g.header_image, g.release_date,
                    g.developers, g.publishers,
-                   d.about_the_game, d.tags, d.screenshots
+                   d.about_the_game, d.tags, d.screenshots,
+                   g.positive, g.negative,
+                   d.average_playtime_forever, d.average_playtime_two_weeks,
+                   d.median_playtime_forever, d.median_playtime_two_weeks
             FROM games g
             JOIN game_details d ON g.app_id = d.app_id
             WHERE g.app_id = ?
@@ -70,6 +73,12 @@ public class DisplayServlet extends HttpServlet {
                 game.setReleaseDate(rs.getString("release_date"));
                 game.setDevelopers(rs.getString("developers"));
                 game.setPublishers(rs.getString("publishers"));
+                game.setPositiveReviews(rs.getInt("positive"));
+                game.setNegativeReviews(rs.getInt("negative"));
+                game.setAveragePlaytimeForever(rs.getInt("average_playtime_forever"));
+                game.setAveragePlaytimeTwoWeeks(rs.getInt("average_playtime_two_weeks"));
+                game.setMedianPlaytimeForever(rs.getInt("median_playtime_forever"));
+                game.setMedianPlaytimeTwoWeeks(rs.getInt("median_playtime_two_weeks"));
                 game.setTags(splitToList(rs.getString("tags")));
                 game.setScreenshots(splitToList(rs.getString("screenshots")));
 

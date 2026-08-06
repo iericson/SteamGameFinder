@@ -254,3 +254,27 @@
     flex: 0 0 460px;
     max-width: 460px;
 }
+
+/*
+    Review Colors
+*/
+
+.review-positive {
+    color: #66c0f4;
+    font-weight: 600;
+}
+
+.review-mixed {
+    color: #b9a074;
+    font-weight: 600;
+}
+
+.review-negative {
+    color: #a34c25;
+    font-weight: 600;
+}
+
+.review-none {
+    color: #8f98a0;
+}
+

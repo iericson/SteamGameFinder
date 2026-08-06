@@ -54,11 +54,24 @@
                 <div class="col-lg-4">
                     <img src="${game.headerImage}" class="img-fluid rounded mb-3" alt="${game.name}" id="detailsHeaderImage">
 
-                    <p class="text-secondary mb-3">
-                        Release Date: ${game.releaseDate}<br>
-                        Developer: ${game.developers}<br>
-                        Publisher: ${game.publishers}
-                    </p>
+                <div class="row text-secondary mb-3">
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Release Date:</strong> ${game.releaseDate}</p>
+                        <p class="mb-1"><strong>Developer:</strong> ${game.developers}</p>
+                        <p class="mb-1"><strong>Publisher:</strong> ${game.publishers}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-1">
+                            <strong>Reviews:</strong><br>
+                            <span class="${game.reviewSummaryClass}">
+                                ${game.reviewSummary}
+                            </span>
+                        </p>
+                        <p class="mb-1 ${game.reviewSummaryClass}">
+                            ${game.positivePercent}% positive (${game.totalReviews} reviews)
+                        </p>
+                    </div>
+                </div>
 
                     <p class="details-about">${game.aboutTheGame}</p>
                     <button type="button" class="btn btn-sm btn-link text-light px-0 mb-3" id="aboutToggle">Show more</button>
@@ -79,6 +92,30 @@
                     </div>
                 </div>
             </div>
+                    
+            <c:if test="${game.averagePlaytimeForever > 0 or game.medianPlaytimeForever > 0}">
+                <div class="row mt-3">
+                    <div class="col-6">
+                        <div class="border rounded p-3">
+                            <div class="text-secondary">Average Playtime</div>
+                            <div class="fs-4">${game.getAveragePlaytimeForeverFormatted()}</div>
+                            <div class="small text-secondary">
+                                Last 2 weeks: ${game.getAveragePlaytimeTwoWeeksFormatted()}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="border rounded p-3">
+                            <div class="text-secondary">Median Playtime</div>
+                            <div class="fs-4">${game.getMedianPlaytimeForeverFormatted()}</div>
+                            <div class="small text-secondary">
+                                Last 2 weeks: ${game.getMedianPlaytimeTwoWeeksFormatted()}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </c:if>
 
             <a href="${pageContext.request.contextPath}/index.html" class="btn btn-outline-light mt-4 back-to-browse-btn">Back to Browse</a>
 
