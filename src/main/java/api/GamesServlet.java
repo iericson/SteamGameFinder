@@ -22,12 +22,6 @@ import util.AdultContentFilter;
 @WebServlet("/api/games")
 public class GamesServlet extends HttpServlet {
 
-    // Homepage rows: only games where this tag is their primary_tag.
-    // The dedup by name has to happen globally (across ALL rows, not just
-    // this tag's matches) or the same name can independently win the
-    // "best row" for multiple different categories, since different
-    // app_id entries sharing a display name can each have a different
-    // primary_tag (soundtracks, dedicated servers, event editions, etc).
     private static final String PRIMARY_SQL = """
         SELECT app_id, name, header_image FROM (
             SELECT app_id, name, header_image, primary_tag,
@@ -39,13 +33,11 @@ public class GamesServlet extends HttpServlet {
             FROM games
         ) ranked
         WHERE rn = 1 AND primary_tag = ?
+        %ADULT_FILTER%
         ORDER BY (positive + recommendations) DESC
         LIMIT ? OFFSET ?
         """;
 
-    // Category page: every game tagged with this, not just primary,
-    // deduped by name -> keeps the lowest app_id per name (the original
-    // listing rather than re-releases/bundles/editions sharing a name).
     private static final String FULL_SQL = """
         SELECT app_id, name, header_image FROM (
             SELECT g.app_id, g.name, g.header_image,
@@ -60,24 +52,26 @@ public class GamesServlet extends HttpServlet {
             WHERE t.name = ?
         ) ranked
         WHERE rn = 1
+        %ADULT_FILTER%
         ORDER BY (positive + recommendations) DESC
         LIMIT ? OFFSET ?
         """;
-    
+
     private static final String ALL_SQL = """
-    SELECT app_id, name, header_image FROM (
-        SELECT app_id, name, header_image,
-               positive, recommendations,
-               ROW_NUMBER() OVER (
-                   PARTITION BY name
-                   ORDER BY (positive + recommendations) DESC
-               ) AS rn
-        FROM games
-    ) ranked
-    WHERE rn = 1
-    ORDER BY (positive + recommendations) DESC
-    LIMIT ? OFFSET ?
-    """;
+        SELECT app_id, name, header_image FROM (
+            SELECT app_id, name, header_image,
+                   positive, recommendations,
+                   ROW_NUMBER() OVER (
+                       PARTITION BY name
+                       ORDER BY (positive + recommendations) DESC
+                   ) AS rn
+            FROM games
+        ) ranked
+        WHERE rn = 1
+        %ADULT_FILTER%
+        ORDER BY (positive + recommendations) DESC
+        LIMIT ? OFFSET ?
+        """;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
